@@ -89,9 +89,59 @@ function getCellColor(row, col) {
   }
 }
 
+function isWhite(p) {
+  return [
+    PIECES.WHITE_BISHOP,
+    PIECES.WHITE_KING,
+    PIECES.WHITE_KNIGHT,
+    PIECES.WHITE_PAWN,
+    PIECES.WHITE_QUEEN,
+    PIECES.WHITE_ROOK
+  ].includes(p);
+}
+
+function isBlack(p) {
+  return [
+    PIECES.BLACK_BISHOP,
+    PIECES.BLACK_KING,
+    PIECES.BLACK_KNIGHT,
+    PIECES.BLACK_PAWN,
+    PIECES.BLACK_QUEEN,
+    PIECES.BLACK_ROOK
+  ].includes(p);
+}
+
+function isSameColor(p1, p2) {
+  if (isWhite(p1) && isWhite(p2)) {
+    return true;
+  } else if (isBlack(p1) && isBlack(p2)) {
+    return true;
+  }
+  return false;
+}
+
+function isMoveValid(board, from, to) {
+  const [fromX, fromY] = from;
+  const [toX, toY] = to;
+
+  const srcPiece = board[fromY][fromX];
+  const destPiece = board[toY][toX];
+
+  if (isSameColor(srcPiece, destPiece)) {
+    return false;
+  }
+
+  return true;
+}
+
 function applyMove(board, move) {
   const copiedBoard = _.cloneDeep(board);
   const [[fromX, fromY], [toX, toY]] = move;
+
+  if (!isMoveValid(board, [fromX, fromY], [toX, toY])) {
+    return board;
+  }
+
   const srcContent = board[fromY][fromX];
   if (srcContent === PIECES.BLANK) {
     return board;
@@ -146,6 +196,7 @@ export default function App() {
           ))}
         </tbody>
       </table>
+      <button onClick={() => setBoard(INITIAL_BOARD_STATE())}>Reset</button>
     </div>
   );
 }
